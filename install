@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -e
+
+VERSION=1.7.14
+
+help() {
+  echo "Usage:"
+  echo "  zmicro package install ossutil <args...>"
+  echo ""
+}
+
+install() {
+  local arch="$(os::arch)"
+  local os="linux"
+  local bin_path=/usr/bin
+  # linux amd64
+  local name="ossutil64"
+
+  if [ "$(os::is_macos)" = "true" ]; then
+    bin_path=/usr/local/bin
+    name="ossutilmac64"
+  else
+    # linux
+    if [ "$arch" = "arm64" ]; then
+      name="ossutilarm64"
+    fi
+  fi
+
+  local tmp_file=/tmp/ossutil
+  local url="https://gosspublic.alicdn.com/ossutil/${VERSION}/$name"
+  curl -fSL $url -o $tmp_file
+
+  chmod +x $tmp_file
+  sudo mv ossutil $bin_path
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  install
+  if [ "$?" = "0" ]; then
+    log::success "success to install ossutil."
+  else
+    log::error "failed to install ossutil."
+  fi
+}
+
+run() {
+  core $@
+}
+
+run $@
