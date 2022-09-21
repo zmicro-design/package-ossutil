@@ -32,7 +32,13 @@ install() {
   curl -fSL $url -o $tmp_file
 
   chmod +x $tmp_file
-  sudo mv ossutil $bin_path
+
+  # clean old
+  if [ -f $bin_path/ossutil ]; then
+    sudo rm -f $bin_path/ossutil
+  fi
+
+  sudo mv $tmp_file $bin_path
 }
 
 core() {
