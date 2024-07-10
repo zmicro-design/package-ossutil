@@ -1,44 +1,9 @@
 #!/bin/bash
 
-set -e
-
-VERSION=1.7.14
-
 help() {
   echo "Usage:"
-  echo "  zmicro package install ossutil <args...>"
+  echo "  zmicro package install ${PACKAGE_NAME} <args...>"
   echo ""
-}
-
-install() {
-  local arch="$(os::arch)"
-  local os="linux"
-  local bin_path=/usr/bin
-  # linux amd64
-  local name="ossutil64"
-
-  if [ "$(os::is_macos)" = "true" ]; then
-    bin_path=/usr/local/bin
-    name="ossutilmac64"
-  else
-    # linux
-    if [ "$arch" = "arm64" ]; then
-      name="ossutilarm64"
-    fi
-  fi
-
-  local tmp_file=/tmp/ossutil
-  local url="https://gosspublic.alicdn.com/ossutil/${VERSION}/$name"
-  curl -fSL $url -o $tmp_file
-
-  chmod +x $tmp_file
-
-  # clean old
-  if [ -f $bin_path/ossutil ]; then
-    sudo rm -f $bin_path/ossutil
-  fi
-
-  sudo mv $tmp_file $bin_path
 }
 
 core() {
@@ -47,16 +12,28 @@ core() {
     exit 0
   fi
 
-  install
-  if [ "$?" = "0" ]; then
-    log::success "success to install ossutil."
-  else
-    log::error "failed to install ossutil."
+  install "$@"
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)] failed to install ${PACKAGE_NAME}."
+    return 1
   fi
+
+  log::success "[$(timestamp)] succeed to install ${PACKAGE_NAME}."
 }
 
 run() {
-  core $@
+  core "$@"
 }
 
-run $@
+if [ "$1" = "ONE_LINE" ]; then
+  command -v zmicro >>/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    curl -o- https://raw.githubusercontent.com/zcorky/zmicro/master/install | sh
+  fi
+
+  zmicro package install bun
+else
+  set -e
+
+  run "$@"
+fi
