@@ -15,31 +15,32 @@ install() {
   local usr_bin_dir="$PACKAGE_USER_BIN_DIR"
   local tmp_dir="$PACKAGE_TMP_DIR"
 
-  # #
-  # case $platform in
-  # darwin)
-  #   platform="osx"
-  #   ;;
-  # linux) ;;
+  local uname=$name
 
-  # *)
-  #   log::error "[$(timestamp)] unsupport platform: $platform"
-  #   return 1
-  #   ;;
-  # esac
-
-  # case $arch in
-  # arm64)
-  #   arch="aarch64"
-  #   ;;
-  # amd64)
-  #   arch="x64"
-  #   ;;
-  # *)
-  #   log::error "[$(timestamp)] unsupport arch: $arch"
-  #   return 1
-  #   ;;
-  # esac
+  #
+  case $platform in
+  darwin)
+    platform="ossutilmac64"
+    ;;
+  linux)
+    case $arch in
+    arm64)
+      uname="ossutilarm64"
+      ;;
+    amd64)
+      uname="ossutil64"
+      ;;
+    *)
+      log::error "[$(timestamp)] unsupport arch: $arch"
+      return 1
+      ;;
+    esac
+    ;;
+  *)
+    log::error "[$(timestamp)] unsupport platform: $platform"
+    return 1
+    ;;
+  esac
 
   # # get latest version
   # log::info "[$(timestamp)][package][$name] checking latest version ..."
@@ -61,7 +62,7 @@ install() {
   #   https://github.com/oven-sh/bun/releases/download/bun-v0.5.9/bun-linux-x64.zip
   #   https://github.com/oven-sh/bun/releases/download/bun-v0.5.9/bun-linux-aarch64.zip
   # generate url
-  local url="https://gosspublic.alicdn.com/ossutil/${PACKAGE_CORE_VERSION#v}/${name}"
+  local url="https://gosspublic.alicdn.com/ossutil/${PACKAGE_CORE_VERSION#v}/${uname}"
   log::debug "[$(timestamp)][package][$name][$kernel][$arch] url: $url, file: ${tmp_file}, tmp_dir: $tmp_dir"
 
   log::info "[$(timestamp)][package][$name] os: $os"
