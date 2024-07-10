@@ -28,18 +28,18 @@ install() {
   #   ;;
   # esac
 
-  case $arch in
-  arm64)
-    arch="aarch64"
-    ;;
-  amd64)
-    arch="x64"
-    ;;
-  *)
-    log::error "[$(timestamp)] unsupport arch: $arch"
-    return 1
-    ;;
-  esac
+  # case $arch in
+  # arm64)
+  #   arch="aarch64"
+  #   ;;
+  # amd64)
+  #   arch="x64"
+  #   ;;
+  # *)
+  #   log::error "[$(timestamp)] unsupport arch: $arch"
+  #   return 1
+  #   ;;
+  # esac
 
   # # get latest version
   # log::info "[$(timestamp)][package][$name] checking latest version ..."
